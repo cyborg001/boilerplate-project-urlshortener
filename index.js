@@ -78,27 +78,33 @@ app.post('/api/shorturl', function(req, res, next ){
   //   console.log(family);
   //   console.log(err)
   // })
-  var info = req.body;
-  let short = new Shorturl(info)
-  short.save(function (err,data){
-      if (err) return console.log(err);
-      // done(null, data);
-  });
-  Shorturl.findOne({"url":info.url},function(err,data){
-    console.log(data)
-  })
 
-  var obj = {"original_url": info.url, "short_url": info.short}
+  r = Shorturl.find({},function(err,data){
+    if (err) return console.log(err);
+    return  data.length;
+    // console.log(data[0]);
+    // const found =  data.find(element => element.url > req.body.url)
+    // console.log(found)
+  });
+  req.body.size = r
+  next();
+  // var info = req.body;
+  // let short = new Shorturl(info)
+  // short.save(function (err,data){
+  //     if (err) return console.log(err);
+  //     // done(null, data);
+  // });
+  // var obj = {"original_url": info.url, "short_url": info.short}
   // req.obj = obj
-}
+
   // next();
   
   
 
-// },function(req,res){
-//     console.log(req.obj)
-//     // res.send(req.obj);
-// }
+},function(req,res){
+      console.log(req.body.size)
+      // res.send(req.obj);
+  }
 );
 
 app.listen(port, function() {
