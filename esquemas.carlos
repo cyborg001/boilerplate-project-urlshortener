@@ -1,0 +1,52 @@
+require('dotenv').config();
+let mongoose = require('mongoose');
+let dns = require('dns');
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+let shorturlSchema = new mongoose.Schema({
+    url: String,
+    short: Number
+});
+
+let Shorturl = mongoose.model('Shorturl', shorturlSchema);
+
+const createAndSaveShorturl = (info, done) =>{
+    let short = new Shorturl(info)
+    short.save(function (err,data){
+        if (err) return console.log(err);
+        done(null, data);
+    });
+};
+
+const findUrlByUrl = (url, done) => {
+    Shorturl.find({url: url},function(err,data){
+      if (err) return console.log(err);
+      
+      done(null, data);
+    });
+    
+};
+
+const findUrlById = (urlId, done) => {
+    Shorturl.findById({_id: urlId},function(err,url){
+      if (err) return console.log(err);
+      
+      done(null, url);
+    });
+    
+};
+
+const removeByUrl = (url, done) => {
+    Shorturl.remove({url: url},function(err,data){
+      if (err) return console.log(err);
+      
+      done(null, data);
+
+    })
+    
+};
+exports.shortUrlModel = Shorturl;
+exports.createAndSaveShorturl = createAndSaveShorturl;
+exports.findUrlById =  findUrlById;
+exports.findUrlByUrl = findUrlByUrl;
+exports.removeByUrl =  removeByUrl;
