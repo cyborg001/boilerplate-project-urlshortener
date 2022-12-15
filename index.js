@@ -44,74 +44,43 @@ const createAndSaveShorturl = (info, done) =>{
   });
 }
 
-// const findUrlByUrl = (url, done) => {
-//     Shorturl.find({url: url},function(err,data){
-//       if (err) return console.log(err);
-      
-//       done(null, data);
-//     });
-    
-// };
-
-const findUrlById = (urlId, done) => {
-    Shorturl.findById({_id: urlId},function(err,url){
-      if (err) return console.log(err);
-      
-      done(null, url);
-    });
-    
-};
-
-const removeByUrl = (url, done) => {
-    Shorturl.remove({url: url},function(err,data){
-      if (err) return console.log(err);
-      
-      done(null, data);
-
-    })
-    
-};
+let cont = 1;
+let urls = [];
+let bodies
 // const createAndSave = require('./index').createAndSaveShorturl
-app.post('/api/shorturl', function(req, res, next ){
-  // r = dns.lookup(url, function(err,address,family){
-  //   console.log(address);
-  //   console.log(family);
-  //   console.log(err)
-  // })
-
-  r = Shorturl.find({},function(err,data){
-    if (err) return console.log(err);
-    return  data.length;
-    // console.log(data[0]);
-    // const found =  data.find(element => element.url > req.body.url)
-    // console.log(found)
-  });
-  req.body.size = r
-  next();
-  // var info = req.body;
-  // let short = new Shorturl(info)
-  // short.save(function (err,data){
-  //     if (err) return console.log(err);
-  //     // done(null, data);
-  // });
-  // var obj = {"original_url": info.url, "short_url": info.short}
-  // req.obj = obj
-
-  // next();
-  
-  
-
-},function(req,res){
-      console.log(req.body.size)
-      // res.send(req.obj);
+app.post('/api/shorturl', function(req, res, next){
+  let url = req.body.url
+  let body;
+  let found  = urls.find(element => element['original_url'] == url )
+  // console.log(urls)
+  if (found == undefined){
+    console.log('not found')
+    body = {"original_url": url, "short_url": cont};
+    urls.push(body);
+    req.body = body;
+    cont += 1;
+  }else{
+    console.log('hola')
+    req.body = found
   }
-);
+  next();
+}, function(req,res){
+  res.send(req.body);
+  
+});
+
+app.get('/api/shorturl/:shorturl?',function(req,res){
+  let shorturl = req.params.shorturl;
+  console.log(shorturl);
+  let found  = urls.find(element => element['short_url'] == Number(shorturl) )
+  console.log(found)
+  if (found != undefined){
+    res.redirect(found.original_url);
+  }
+})
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
 exports.shortUrlModel = Shorturl;
 // exports.createAndSaveShorturl = createAndSaveShorturl;
-exports.findUrlById =  findUrlById;
-// exports.findUrlByUrl = findUrlByUrl;
-exports.removeByUrl =  removeByUrl;
